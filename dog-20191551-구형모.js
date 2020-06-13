@@ -3,6 +3,8 @@
  * author: Koo Hyong Mo (chrisais9@naver.com)
  */
 
+
+
 var gameState = 0 // 게임 상태 (시작전에 알 클릭 안되도록 설정하는데 쓰임)
 
 // 게임 설정 관련 변수
@@ -19,9 +21,13 @@ var gameLoopIntervalID
 var dogArray = []; // 강아지가 들어있는 달걀 번호 (왼쪽 위 부터 차례로 0~24)
 var foundDogArray = []; // 찾은 강아지가 들어있는 번호 (런타임 에서 활용)
 
-// BGM 재생
-var mainBGM = new Audio('assets/bgm_main.mp3');
-mainBGM.play();
+// BGM 자동 재생 관련 이슈 
+// (https://stackoverflow.com/questions/50490304/how-to-make-audio-autoplay-on-chrome)
+window.onload = function() {
+    var context = new AudioContext();
+};
+// 메인 BGM 볼륨 조절
+$('#mainbgm').prop("volume", 0.4);
 
 
 initialize();

@@ -3,8 +3,6 @@
  * author: Koo Hyong Mo (chrisais9@naver.com)
  */
 
-
-
 var gameState = 0 // 게임 상태 (시작전에 알 클릭 안되도록 설정하는데 쓰임)
 
 // 게임 설정 관련 변수
@@ -26,13 +24,15 @@ var foundDogArray = []; // 찾은 강아지가 들어있는 번호 (런타임 �
 window.onload = function() {
     var context = new AudioContext();
 };
-// 메인 BGM 볼륨 조절
+// 메인 BGM 볼륨 조절 (너무 크면 효과음이 잘 안들리는 이슈가 있음)
 $('#mainbgm').prop("volume", 0.4);
 
-
+// 처음 웹페이지가 로드되면 무조건 초기화
 initialize();
 
 // 초기화 함수:  처음 로드 되었을때, 게임을 다시 시작할때 사용 
+// 사실 웹페이지를 새로고침 할 수도 있지만 좋지 않은 UX라 생각해서
+// 아래 같이 일일히 초기화 해줌
 function initialize() {
 
     // attribute들 초기화
@@ -109,8 +109,10 @@ $('#p-start-game').click(function() {
     $(this).hide();
 })
 
+// 강아지가 위치한 알은 임시로 보여줌 10초간
 function showDogsTemporary() {
-    // 강아지가 위치한 알은 임시로 보여줌 10초간
+
+    // 강아지가 있는 알은 img2.gif로 바꿔주는 로직
     for (var i = 0; i < maxEggNumber; i++) {
         var egg = $("#egg" + i)
         if (dogArray.indexOf(parseInt(i)) != -1) {
@@ -122,7 +124,10 @@ function showDogsTemporary() {
     $('#p-instruction').text('숨은 그림을 보세요');
     var intervalID = setInterval(function() {
         preTimersec++;
+        // 시간 텍스트 갱신
         $("#p-timer").text("시간 " + (10 - preTimersec));
+
+        // 10초가 지나면
         if (preTimersec >= 10) {
             // 게임 시작됨. 강아지를 찾아야됨
             gameState = 1;
@@ -138,11 +143,18 @@ function showDogsTemporary() {
     }, 1000);
 }
 
+// 강아지 있는 위치를 10초동안 외우훈 정답을 찾아야 되는 게임 루프에 진입할때 쓰이는 함수
 function setGameLoopTimeout() {
     var sec = -1;
     gameLoopIntervalID = setInterval(function() {
         sec++;
         $('#p-timer').text('시간 ' + (customTime - sec));
+        if ((customTime - sec) <= 5) {
+            // 게임 남은 시간 5초 이하 부터는 시계소리 재생
+            var effect = new Audio("assets/clock.mp3");
+            effect.play();
+        }
+        // 사용자가 설정한 시간이 지나면 게임 오버
         if (sec >= customTime) {
             gameOver(false);
             clearInterval(gameLoopIntervalID);
@@ -151,10 +163,10 @@ function setGameLoopTimeout() {
 }
 
 // 알 클릭
+// document 에 click 리스너를 달아주고 td안에 클릭되면 처리
 $(document).on('click', 'td', function() {
 
-    // 게임 시작 안되었으면 클릭 X
-
+    // 게임 시작 안되었으면 클릭 무시
     if (gameState == 0) return;
 
     // 누른 알의 인덱스를 구함 <td id='egg11'> -> 11
@@ -198,8 +210,10 @@ $(document).on('click', 'td', function() {
             gameOver(false);
         }
     }
-})
+});
 
+// 게임이 오버 되었을때 호출되는 함수
+// 인자 isSuccess 는 게임 성공 실패 여부임
 function gameOver(isSuccess) {
     // 게임 상태 변경
     gameState = 0;
@@ -230,15 +244,18 @@ function gameOver(isSuccess) {
     }
 }
 
+// 게임이 오버된후 찾지 못한 강아지를 보여주는 함수
 function showNotFoundDogs() {
     for (var i = 0; i < maxEggNumber; i++) {
-        // 아래는 못찾은 강아지들 보여주는 로직
-        var egg = $("#egg" + i)
+        // 일단 알의 인덱스를 받아오고
+        var egg = $("#egg" + i);
+        // 강아지가 들어 있는 알이면
         if (dogArray.indexOf(i) != -1) {
-
+            // 이미지를 강아지가 있는 img2로 변경
             egg.find('img').attr("src", "assets/img2.gif");
 
-            // 못찾은 강아지 빨간 박스로 강조 하도록 class 추가
+            // 또한, 못찾은 강아지는 따로 빨간 박스로 강조 하도록 class 추가
+            // @see dog-20191551-구형모.css class-not-found {}
             if (foundDogArray.indexOf(i) == -1) {
                 egg.addClass('class-not-found');
             }
@@ -246,6 +263,7 @@ function showNotFoundDogs() {
     }
 }
 
+// 몇 마리의 강아지를 찾을지 Prompt 로 입력받음
 function setCustomFindDog() {
     while (1) {
         var n = prompt("🐶 몇 마리의 강아지를 찾으실건가요~~? (정수, n < 8)")
@@ -253,6 +271,7 @@ function setCustomFindDog() {
             // 사용자가 취소 누르면 다시 처음 부터
             return false;
         }
+        // 유효한 값인지 검사
         if (isFinite(n) && n < 8) {
             customFindDogs = n;
             return true;
@@ -260,6 +279,7 @@ function setCustomFindDog() {
     }
 }
 
+// 몇 초 동안 강아지를 찾을지 Prompt 로 입력받음
 function setCustomTime() {
     while (1) {
         var n = prompt("⏳ 몇 초 동안 강아지를 찾으실건가요~~? (정수, n < 30)")
@@ -267,17 +287,20 @@ function setCustomTime() {
             // 사용자가 취소 누르면 다시 처음 부터
             return false;
         }
+        // 유효한 값인지 검사
         if (isFinite(n) && n < 30) {
             customTime = n;
             return true;
         }
     }
 }
-
+// 게임 보드 만드는 함수
+// id=board 인 <table> 을 찾아서 내부에 아래같이 테이블을 넣어줌
 function makeGameBoard() {
     var tableCode = '<tr>';
     for (var i = 0; i < 24; i++) {
         if (i > 0 && i % 8 == 0) {
+            // 줄바꿈
             tableCode += '</tr><tr>';
         }
         tableCode += "<td id=egg" + i + "><img src=assets/img1.gif></td>";

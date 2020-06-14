@@ -14,23 +14,23 @@ Kookmin University 2020 1학기 웹클라이언트컴퓨팅 기말 과제
 ## Preview
 
 #### <div id="initial">게임 시작 전</div>
-![](screenshot/initial.png)
+![](screenshot/20191551-구형모-initial.png)
 
 #### <div id="customize">게임 설정</div>
-![](screenshot/customize.png)
+![](screenshot/20191551-구형모-customize.png)
 
 #### <div id="memorize">강아지 위치 외우기</div>
-![](screenshot/memorize.png)
+![](screenshot/20191551-구형모-memorize.png)
 
 #### <div id="finding">강아지 찾기</div>
-![](screenshot/finding.png)
+![](screenshot/20191551-구형모-finding.png)
 
 #### <div id="result">게임 결과</div>
 게임 성공
-![](screenshot/gamesuccess.png)
+![](screenshot/20191551-구형모-gamesuccess.png)
 
 게임 실패
-![](screenshot/gamefail.png)
+![](screenshot/20191551-구형모-gamefail.png)
 
 
 
